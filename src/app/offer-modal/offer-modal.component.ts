@@ -37,7 +37,7 @@ export class OfferModalComponent implements OnInit {
       isPreorder: [this.data.selectedOffer.isPreorder],
       type: [this.data.selectedOffer.type],
       price: this.fb.group({
-        amount: [this.data.selectedOffer.price.amount, [Validators.required, Validators.min(0)]],
+        amount: [this.data.selectedOffer.price.amount ? this.data.selectedOffer.price.amount/100 : 0, [Validators.required, Validators.min(0)]],
         currency: [this.data.selectedOffer.price.currency, Validators.required],
       }),
       seller: this.fb.group({

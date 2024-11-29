@@ -84,7 +84,6 @@ export class AppComponent {
   openModal(offer: Offer): void {
     if (this.isViewOnly) return;
     this.selectedOffer = { ...offer };
-    this.selectedOffer.price.amount /= 100;
   
     const modalRef = this.modalService.open(OfferModalComponent, { size: 'lg' });
     modalRef.componentInstance.data = { selectedOffer: this.selectedOffer, sellers: this.sellers };
