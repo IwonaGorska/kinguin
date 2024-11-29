@@ -60,10 +60,10 @@ export class AppComponent {
       },
       (error) => {
         console.error('Error occurred while fetching offers:', error);
+        // In the future add a snackbar as well
       }
     );
   }
-  
 
   /**
    * Prepares a list of unique sellers
@@ -89,8 +89,12 @@ export class AppComponent {
     const modalRef = this.modalService.open(OfferModalComponent, { size: 'lg' });
     modalRef.componentInstance.data = { selectedOffer: this.selectedOffer, sellers: this.sellers };
     modalRef.componentInstance.modalRef = modalRef;
+
+    modalRef.componentInstance.save.subscribe((updatedData: Offer) => {
+      this.saveChanges(updatedData, modalRef);
+      modalRef.close();
+    });
   }
-  
 
   /**
    * Changes "View Only" mode
@@ -105,44 +109,10 @@ export class AppComponent {
     }
   }
 
-  /**
-   * Resets "price" after currency change
-   */
-  // resetPrice(): void {
-  //   this.selectedOffer.price.amount = 0;
-  // }
-
-  /**
-   * Switches between select and input for seller
-   */
-  // toggleSellerInput(): void {
-  //   if (this.selectedOffer.type === 'other') {
-  //     this.selectedOffer.seller.name = '';
-  //   } else {
-  //     this.selectedOffer.seller.id = -1;
-  //   }
-  // }
-
-  /**
-   * Sets readonly for "Popularity" after checking "isPreorder"
-   */
-  // toggleReadonly(): void {
-  //   if (this.selectedOffer.isPreorder) {
-  //     this.previousPopularityValue = this.selectedOffer.popularityValue;
-  //     this.selectedOffer.popularityValue = 0;
-  //   } else {
-  //     this.selectedOffer.popularityValue = this.previousPopularityValue;
-  //   }
-  // }
-
     /**
    * Saves the changes, although api doesn't give a possibility to save it in v2
    */
-  saveChanges(modal: NgbModalRef): void {
-    const updatedOffer: Offer = {
-      ...this.selectedOffer,
-      price: { ...this.selectedOffer.price, amount: this.selectedOffer.price.amount * 100 },
-    };
+  saveChanges(updatedOffer: Offer, modal: NgbModalRef): void {
 
     this.offerService.saveOffer(updatedOffer).subscribe(
       () => {
@@ -154,9 +124,9 @@ export class AppComponent {
       },
       (error) => {
         console.error('Error saving offer:', error);
+        // In the future add a snackbar as well
       }
     );
   }
-  
 
 }
