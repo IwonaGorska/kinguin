@@ -30,7 +30,10 @@
     <div
       *ngFor="let offer of offers"
       class="card my-3"
-      (click)="openModal(offer, modalTemplate)"
+      (click)="openModal(offer)"
+      (keyup.enter)="openModal(offer)"
+      (keydown.space)="openModal(offer)"
+      tabindex="0"
       [ngClass]="{ 'clickable': !isViewOnly }"
     >
       <img [src]="offer.productImageUrl" class="card-img-top" alt="Product Image" />
@@ -46,145 +49,11 @@
     <p>Brak ofert do wyświetlenia.</p>
   </ng-template>
 
-  <!-- Modal with the form -->
-  <ng-template #modalTemplate let-modal>
-    <div class="modal-header">
-      <h5 class="modal-title">Edytuj ofertę</h5>
-      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
-    </div>
-    <div class="modal-body">
-      <form>
-        <!-- Product's name -->
-        <div class="form-group mb-3">
-          <label for="productName">Nazwa produktu</label>
-          <input
-            id="productName"
-            type="text"
-            class="form-control"
-            [(ngModel)]="selectedOffer.productName"
-            name="productName"
-          />
-        </div>
+  <!-- <app-offer-modal
+    *ngIf="selectedOffer"
+    [selectedOffer]="selectedOffer"
+    [sellers]="sellers"
+    (save)="saveChanges($event)"
+  ></app-offer-modal> -->
 
-        <!-- Popularity -->
-        <div class="form-group mb-3">
-          <label for="popularityValue">Popularność</label>
-          <input
-            id="popularityValue"
-            type="number"
-            class="form-control"
-            [(ngModel)]="selectedOffer.popularityValue"
-            name="popularityValue"
-            [readonly]="selectedOffer.isPreorder"
-          />
-        </div>
-
-        <!-- Preorder -->
-        <div class="form-check mb-3">
-          <input
-            id="isPreorder"
-            type="checkbox"
-            class="form-check-input"
-            [(ngModel)]="selectedOffer.isPreorder"
-            name="isPreorder"
-            (change)="toggleReadonly()"
-          />
-          <label for="isPreorder" class="form-check-label">Przedsprzedaż</label>
-        </div>
-
-        <!-- Type -->
-        <div class="form-group mb-3">
-          <label for="type">Typ</label>
-          <select
-            id="type"
-            class="form-select"
-            [(ngModel)]="selectedOffer.type"
-            name="type"
-            (change)="toggleSellerInput()"
-          >
-            <option value="kinguin">Kinguin</option>
-            <option value="other">Inny</option>
-          </select>
-        </div>
-
-        <!-- Price -->
-        <div class="form-group mb-3">
-          <label for="price">Cena</label>
-          <input
-            id="price"
-            type="text"
-            class="form-control"
-            [(ngModel)]="selectedOffer.price.amount"
-            name="price"
-          />
-        </div>
-
-        <!-- Currency -->
-        <div class="form-group mb-3">
-          <label for="currency">Waluta</label>
-          <select
-            id="currency"
-            class="form-select"
-            [(ngModel)]="selectedOffer.price.currency"
-            name="currency"
-            (change)="resetPrice()"
-          >
-            <option value="EUR">EUR</option>
-            <option value="USD">USD</option>
-            <option value="GBP">GBP</option>
-            <option value="PLN">PLN</option>
-          </select>
-        </div>
-
-        <!-- Seller -->
-        <div *ngIf="selectedOffer.type !== 'other'" class="form-group mb-3">
-          <label for="seller">Sprzedawca</label>
-          <select
-            id="seller"
-            class="form-select"
-            [(ngModel)]="selectedOffer.seller.id"
-            name="seller"
-          >
-            <option
-              *ngFor="let seller of sellers"
-              [value]="seller.id"
-            >
-              {{ seller.name }}
-            </option>
-          </select>
-        </div>
-        <div *ngIf="selectedOffer.type === 'other'" class="form-group mb-3">
-          <label for="sellerInput">Sprzedawca</label>
-          <input
-            id="sellerInput"
-            type="text"
-            class="form-control"
-            [(ngModel)]="selectedOffer.seller.name"
-            name="seller"
-          />
-        </div>
-
-        <!-- Stock -->
-        <div class="form-group mb-3">
-          <label for="activeStockNumber">Aktywny magazyn</label>
-          <input
-            id="activeStockNumber"
-            type="number"
-            class="form-control"
-            [(ngModel)]="selectedOffer.activeStockNumber"
-            name="activeStockNumber"
-          />
-        </div>
-      </form>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Zamknij</button>
-      <div
-        data-bs-toggle="tooltip"
-        title="Zapisywanie nie jest dostępne">
-        <button type="button"
-          disabled class="btn btn-primary" (click)="saveChanges(modal)">Zapisz zmiany</button>
-      </div>
-    </div>
-  </ng-template>
 </div>

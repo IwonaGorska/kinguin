@@ -1,31 +1,30 @@
-import { Component, TemplateRef, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { environment } from '../environments/environment';
-import { ApiResponse } from '../models/api-response';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { Offer } from '../models/offer';
 import { Seller } from '../models/seller';
 import { PreparedPricePipe } from './prepared-price.pipe';
 import { OfferService } from '../services/offer.service';
+import { OfferModalComponent } from './offer-modal/offer-modal.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgbModule, NgxPermissionsModule, PreparedPricePipe],
+  imports: [CommonModule, FormsModule, NgbModule, NgxPermissionsModule, PreparedPricePipe, OfferModalComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  id: string = '';
+  id = '';
   offers: Offer[] = [];
   selectedOffer!: Offer;
   sellers: Seller[] = [];
-  isViewOnly: boolean = false;
+  isViewOnly = false;
   previousPopularityValue!: number;
 
   // Services injecting
@@ -82,12 +81,16 @@ export class AppComponent {
   /**
    * Opens the modal
    */
-  openModal(offer: any, modalTemplate: TemplateRef<any>): void {
+  openModal(offer: Offer): void {
     if (this.isViewOnly) return;
     this.selectedOffer = { ...offer };
     this.selectedOffer.price.amount /= 100;
-    this.modalService.open(modalTemplate, { size: 'lg' });
+  
+    const modalRef = this.modalService.open(OfferModalComponent, { size: 'lg' });
+    modalRef.componentInstance.data = { selectedOffer: this.selectedOffer, sellers: this.sellers };
+    modalRef.componentInstance.modalRef = modalRef;
   }
+  
 
   /**
    * Changes "View Only" mode
@@ -105,37 +108,37 @@ export class AppComponent {
   /**
    * Resets "price" after currency change
    */
-  resetPrice(): void {
-    this.selectedOffer.price.amount = 0;
-  }
+  // resetPrice(): void {
+  //   this.selectedOffer.price.amount = 0;
+  // }
 
   /**
    * Switches between select and input for seller
    */
-  toggleSellerInput(): void {
-    if (this.selectedOffer.type === 'other') {
-      this.selectedOffer.seller.name = '';
-    } else {
-      this.selectedOffer.seller.id = -1;
-    }
-  }
+  // toggleSellerInput(): void {
+  //   if (this.selectedOffer.type === 'other') {
+  //     this.selectedOffer.seller.name = '';
+  //   } else {
+  //     this.selectedOffer.seller.id = -1;
+  //   }
+  // }
 
   /**
    * Sets readonly for "Popularity" after checking "isPreorder"
    */
-  toggleReadonly(): void {
-    if (this.selectedOffer.isPreorder) {
-      this.previousPopularityValue = this.selectedOffer.popularityValue;
-      this.selectedOffer.popularityValue = 0;
-    } else {
-      this.selectedOffer.popularityValue = this.previousPopularityValue;
-    }
-  }
+  // toggleReadonly(): void {
+  //   if (this.selectedOffer.isPreorder) {
+  //     this.previousPopularityValue = this.selectedOffer.popularityValue;
+  //     this.selectedOffer.popularityValue = 0;
+  //   } else {
+  //     this.selectedOffer.popularityValue = this.previousPopularityValue;
+  //   }
+  // }
 
     /**
    * Saves the changes, although api doesn't give a possibility to save it in v2
    */
-  saveChanges(modal: any): void {
+  saveChanges(modal: NgbModalRef): void {
     const updatedOffer: Offer = {
       ...this.selectedOffer,
       price: { ...this.selectedOffer.price, amount: this.selectedOffer.price.amount * 100 },

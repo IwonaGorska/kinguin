@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: true,
 })
 export class PreparedPricePipe implements PipeTransform {
-  transform(value: any, ...args: any[]): string {
+  transform(value: number): string {
     // Check if it is number
     const price = typeof value === 'number' ? value : parseFloat(value);
 
